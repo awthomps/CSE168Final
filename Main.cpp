@@ -11,6 +11,7 @@
 #include "BoxTreeObject.h"
 #include "AshikhminMaterial.h"
 #include "LambertMaterial.h"
+#include "Wood.h";
 #include <thread>
 
 void project1();
@@ -21,7 +22,7 @@ void Final();
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char **argv) {
-	Final();
+	project2();// Final();
 	std::this_thread::sleep_for(std::chrono::seconds(20));
 	return 0;
 }
@@ -93,18 +94,23 @@ void project2() {
 	ground.MakeBox(5.0f, 0.1f, 5.0f);
 	scn.AddObject(ground);
 
+	Wood tableWood;
+	tableWood.SetScale(0.002f);
+	tableWood.SetOrientation(ORIENTATION_Z);
+
 	// Create dragon
 	MeshObject dragon;
 	dragon.LoadPLY("dragon.ply", 0);
-	//dragon.Smooth();
+	dragon.Smooth();
 
 	BoxTreeObject tree;
 	tree.Construct(dragon);
-	scn.AddObject(tree);
+	//scn.AddObject(tree);
 
 	// Create instance
 	InstanceObject inst(tree);
 	Matrix34 mtx;
+	inst.SetMaterial(&tableWood);
 	mtx.MakeRotateY(PI);
 	mtx.d.Set(-0.05f, 0.0f, -0.1f);
 	inst.SetMatrix(mtx);
@@ -245,13 +251,19 @@ void Final() {
 
 	// Create table
 	MeshObject table;
-	table.LoadPLY("models/table.ply", 0);
+	table.LoadPLY("dragon.ply", 0);
 	table.Smooth();
 	BoxTreeObject treeTable;
 	treeTable.Construct(table);
 	// Create instance
 	InstanceObject instTable(treeTable);
+	Wood tableWood;
+	tableWood.SetScale(1.0f);
+	tableWood.SetOrigin(Vector3(0,4.0f,0));
+	tableWood.SetOrientation(ORIENTATION_Z);
+	instTable.SetMaterial(&tableWood);
 	Matrix34 mtxTable;
+	mtxTable.MakeScale(40.0f);
 	instTable.SetMatrix(mtxTable);
 	scn.AddObject(instTable);
 
@@ -293,18 +305,18 @@ void Final() {
 	// Point Light;
 	PointLight point1, point2, point3, point4;
 	point1.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point1.SetIntensity(50.0f);
+	point1.SetIntensity(5.0f);
 	point1.SetPosition(Vector3(-5.0f, 15.0f, 5.0f));
 	scn.AddLight(point1);
 
 	point2.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point2.SetIntensity(50.0f);
+	point2.SetIntensity(5.0f);
 	point2.SetPosition(Vector3(-5.0f, 15.0f, -5.0f));
 	scn.AddLight(point2);
 
 
 	point3.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point3.SetIntensity(50.0f);
+	point3.SetIntensity(5.0f);
 	point3.SetPosition(Vector3(5.0f, 15.0f, 5.0f));
 	scn.AddLight(point3);
 
