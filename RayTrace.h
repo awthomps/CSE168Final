@@ -8,7 +8,7 @@
 #include "Scene.h"
 
 
-#define MAX_DEPTH 10
+#define MAX_DEPTH 1
 
 struct ShadowRay {
 	Ray ray;

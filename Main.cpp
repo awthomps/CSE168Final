@@ -16,11 +16,12 @@
 void project1();
 void project2();
 void project3();
+void Final();
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char **argv) {
-	project3();
+	Final();
 	std::this_thread::sleep_for(std::chrono::seconds(20));
 	return 0;
 }
@@ -72,6 +73,7 @@ void project1() {
 	cam.SetResolution(800, 600);
 	cam.SetFOV(40.0f);
 	cam.SetAspect(1.33f);
+	cam.SetSuperSample(1);
 
 	// Render image
 	cam.Render(scn);
@@ -94,7 +96,7 @@ void project2() {
 	// Create dragon
 	MeshObject dragon;
 	dragon.LoadPLY("dragon.ply", 0);
-	dragon.Smooth();
+	//dragon.Smooth();
 
 	BoxTreeObject tree;
 	tree.Construct(dragon);
@@ -133,6 +135,7 @@ void project2() {
 	cam.SetFOV(40.0f);
 	cam.SetAspect(1.33f);
 	cam.SetResolution(800, 600);
+	cam.SetSuperSample(1);
 
 	// Render image
 	cam.Render(scn);
@@ -210,9 +213,115 @@ void project3() {
 	cam.SetFOV(40.0f);
 	cam.SetAspect(1.33f);
 	cam.SetResolution(800, 600);
-	cam.SetSuperSample(2);
+	cam.SetSuperSample(1);
 
 	// Render image
 	cam.Render(scn);
 	cam.SaveBitmap("project3.bmp");
+}
+
+void Final() {
+	// Create scene
+	Scene scn;
+	scn.SetSkyColor(Color(0.8f, 0.8f, 1.0f));
+
+	// Create ground
+	MeshObject ground, backWall, leftWall;
+	ground.MakeBox(30.0f, 0.1f, 30.0f);
+	backWall.MakeBox(30.0f, 30.0f, 0.1f);
+	leftWall.MakeBox(0.1f, 30.0f, 30.f);
+	scn.AddObject(ground);
+	InstanceObject backWallInst(backWall);
+	Matrix34 mtxBackWall;
+	mtxBackWall.d.Set(0.0f, 0.0f, -15.0f);
+	backWallInst.SetMatrix(mtxBackWall);
+	scn.AddObject(backWallInst);
+	InstanceObject leftWallInst(leftWall);
+	Matrix34 mtxLeftWall;
+	mtxLeftWall.d.Set(-15.0f, 0.0f, 0.0f);
+	leftWallInst.SetMatrix(mtxLeftWall);
+	scn.AddObject(leftWallInst);
+
+
+	// Create table
+	MeshObject table;
+	table.LoadPLY("models/table.ply", 0);
+	table.Smooth();
+	BoxTreeObject treeTable;
+	treeTable.Construct(table);
+	// Create instance
+	InstanceObject instTable(treeTable);
+	Matrix34 mtxTable;
+	instTable.SetMatrix(mtxTable);
+	scn.AddObject(instTable);
+
+	// Pillars:
+	MeshObject column;
+	column.LoadPLY("models/column.ply",0);
+	column.Smooth();
+	BoxTreeObject treeColumn;
+	treeColumn.Construct(column);
+	InstanceObject instColumn1(treeColumn), instColumn2(treeColumn), instColumn3(treeColumn), instColumn4(treeColumn), instColumn5(treeColumn), instColumn6(treeColumn);
+	Matrix34 col1, col2, col3, col4, col5, col6;
+	col1.d.Set(10.0f, 0.0f, 10.0f);
+	col2.d.Set(-10.0f, 0.0f, 10.0f);
+	col3.d.Set(10.0f, 0.0f, 0.0f);
+	col4.d.Set(-10.0f, 0.0f, 0.0f);
+	col5.d.Set(10.0f, 0.0f, -10.0f);
+	col6.d.Set(-10.0f, 0.0f, -10.0f);
+	
+	instColumn1.SetMatrix(col1);
+	scn.AddObject(instColumn1);
+	instColumn2.SetMatrix(col2);
+	scn.AddObject(instColumn2);
+	instColumn3.SetMatrix(col3);
+	scn.AddObject(instColumn3);
+	instColumn4.SetMatrix(col4);
+	scn.AddObject(instColumn4);
+	instColumn5.SetMatrix(col5);
+	scn.AddObject(instColumn5);
+	instColumn6.SetMatrix(col6);
+	scn.AddObject(instColumn6);
+
+	// Create lights
+	DirectLight sunlgt;
+	sunlgt.SetBaseColor(Color(1.0f, 1.0f, 0.9f));
+	sunlgt.SetIntensity(1.0f);
+	sunlgt.SetDirection(Vector3(-0.5f, -1.0f, -0.5f)); //sunlgt.SetDirection(Vector3(2.0f, -3.0f, -2.0f));
+	//scn.AddLight(sunlgt);
+
+	// Point Light;
+	PointLight point1, point2, point3, point4;
+	point1.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
+	point1.SetIntensity(50.0f);
+	point1.SetPosition(Vector3(-5.0f, 15.0f, 5.0f));
+	scn.AddLight(point1);
+
+	point2.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
+	point2.SetIntensity(50.0f);
+	point2.SetPosition(Vector3(-5.0f, 15.0f, -5.0f));
+	scn.AddLight(point2);
+
+
+	point3.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
+	point3.SetIntensity(50.0f);
+	point3.SetPosition(Vector3(5.0f, 15.0f, 5.0f));
+	scn.AddLight(point3);
+
+	point4.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
+	point4.SetIntensity(50.0f);
+	point4.SetPosition(Vector3(5.0f, 15.0f, -5.0f));
+	scn.AddLight(point4);
+
+	// Create camera
+	Camera cam;
+	cam.LookAt(Vector3(5.0f, 10.0f, 20.0f), Vector3(0.0f, 0.0f, 0.0f));
+	cam.SetFOV(40.0f);
+	cam.SetAspect(1.33f);
+	cam.SetResolution(800, 600);
+	cam.SetSuperSample(1);
+
+	// Render image
+	cam.Render(scn);
+	cam.SaveBitmap("final1.bmp");
 }
