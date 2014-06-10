@@ -230,8 +230,8 @@ void Final() {
 	ground.MakeBox(30.0f, 0.1f, 30.0f);
 	backWall.MakeBox(30.0f, 30.0f, 0.1f);
 	leftWall.MakeBox(0.1f, 30.0f, 30.f);
-	scn.AddObject(ground);
-	InstanceObject backWallInst(backWall);
+	InstanceObject groundInst(ground), backWallInst(backWall);
+	scn.AddObject(groundInst);
 	Matrix34 mtxBackWall;
 	mtxBackWall.d.Set(0.0f, 0.0f, -15.0f);
 	backWallInst.SetMatrix(mtxBackWall);
