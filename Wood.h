@@ -5,12 +5,10 @@
 
 class Wood : public ProceduralTexture {
 public:
-	Wood() {
-		scale = 1.0f;
-		orientation = ORIENTATION_X;
+	Wood() :ProceduralTexture() {
 		unsigned int size = 2;
 		Color colors[2];
-		colors[0] = Color(Vector3(139.0 / 255.0, 69.0 / 255.0, 29.0 / 255.0) / 2.0f);
+		colors[0] = Color(Vector3(139.0 / 255.0, 69.0 / 255.0, 29.0 / 255.0)/2.0);
 		colors[1] = Color(222.0 / 255.0, 184.0 / 255.0, 135.0 / 255.0);
 		SetColorMap(size, colors);
 	}
@@ -19,7 +17,6 @@ public:
 	Color GenerateColor(Vector3 v) {
 		v = v / scale;
 		float val = SampleFunction(v.x, v.y, v.z);
-		noiseDistance = 10.0f;
 		float sampleVal = val - floor(val); //get a value from 0-1.0
 		if( sampleVal < 0.0 || sampleVal > 1.0) std::cout << sampleVal << std::endl;
 		return ColorFromMap(sampleVal);
@@ -57,13 +54,13 @@ public:
 private:
 	float SampleFunction(float s, float t, float r) {
 		if (orientation == ORIENTATION_X) {
-			return ((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z));
+			return (((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z))) +SampleNoise(s, t, r);
 		}
 		else if (orientation == ORIENTATION_Y) {
-			return ((s - origin.x)*(s - origin.x)) + ((r - origin.z)*(r - origin.z));
+			return (((s - origin.x)*(s - origin.x)) + ((r - origin.z)*(r - origin.z))) +SampleNoise(s, t, r);
 		}
 		else {
-			return ((s - origin.x)*(s - origin.x)) + ((t - origin.y)*(t - origin.y));
+			return (((s - origin.x)*(s - origin.x)) + ((t - origin.y)*(t - origin.y))) +SampleNoise(s, t, r);
 		}
 	}
 

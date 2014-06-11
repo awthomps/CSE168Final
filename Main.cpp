@@ -22,6 +22,7 @@ void Final();
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char **argv) {
+	std::cout << "Start" << std::endl;
 	Final();
 	std::this_thread::sleep_for(std::chrono::seconds(20));
 	return 0;
@@ -179,6 +180,14 @@ void project3() {
 	mtl[3].SetSpecularColor(Color(1.0f, 1.0f, 1.0f));
 	mtl[3].SetRoughness(1000.0f, 1000.0f);
 
+
+	//testWood
+	Wood tableWood;
+	tableWood.SetScale(2.0f);
+	tableWood.SetOrigin(Vector3(0, 4.0f, 0));
+	tableWood.SetOrientation(ORIENTATION_Y);
+	tableWood.SetNoiseBehavior(0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0);
+
 	// Load dragon mesh
 	MeshObject dragon;
 	dragon.LoadPLY("dragon.ply", 0);
@@ -202,7 +211,7 @@ void project3() {
 	lambert.SetDiffuseColor(Color(0.3f, 0.3f, 0.35f));
 
 	MeshObject ground;
-	ground.MakeBox(2.0f, 0.11f, 2.0f, &lambert);
+	ground.MakeBox(2.0f, 0.11f, 2.0f, &tableWood);
 	scn.AddObject(ground);
 
 	// Create lights
@@ -230,6 +239,13 @@ void Final() {
 	Scene scn;
 	scn.SetSkyColor(Color(0.8f, 0.8f, 1.0f));
 
+	//Materials
+	Wood tableWood;
+	tableWood.SetScale(2.0f);
+	tableWood.SetOrigin(Vector3(2.0f, 0.0f, 0));
+	tableWood.SetOrientation(ORIENTATION_Y);
+	tableWood.SetNoiseBehavior(0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0);
+
 	// Create ground
 	MeshObject ground, backWall, leftWall;
 	ground.MakeBox(30.0f, 0.1f, 30.0f);
@@ -250,20 +266,16 @@ void Final() {
 
 	// Create table
 	MeshObject table;
-	table.LoadPLY("models/bench.ply", 0);
+	table.LoadPLY("models/table.ply", 0);
 	table.Smooth();
 	BoxTreeObject treeTable;
 	treeTable.Construct(table);
 	// Create instance
 	InstanceObject instTable(treeTable);
-	Wood tableWood;
-	tableWood.SetScale(2.0f);
-	tableWood.SetOrigin(Vector3(0,4.0f,0));
-	tableWood.SetOrientation(ORIENTATION_Y);
 	instTable.SetMaterial(&tableWood);
 	Matrix34 mtxTable;
-	mtxTable.MakeScale(4.0f);
-	mtxTable.d.Set(0.0f, 0.0f, 10.0f);
+	//mtxTable.MakeScale(8.0f);
+	mtxTable.d.Set(0.0f, 0.0f, 0.0f);
 	instTable.SetMatrix(mtxTable);
 	scn.AddObject(instTable);
 
@@ -283,16 +295,22 @@ void Final() {
 	col6.d.Set(-10.0f, 0.0f, -10.0f);
 	
 	instColumn1.SetMatrix(col1);
+	//instColumn1.SetMaterial(&tableWood);
 	scn.AddObject(instColumn1);
 	instColumn2.SetMatrix(col2);
+	//instColumn2.SetMaterial(&tableWood);
 	scn.AddObject(instColumn2);
 	instColumn3.SetMatrix(col3);
+	//instColumn3.SetMaterial(&tableWood);
 	scn.AddObject(instColumn3);
 	instColumn4.SetMatrix(col4);
+	//instColumn4.SetMaterial(&tableWood);
 	scn.AddObject(instColumn4);
 	instColumn5.SetMatrix(col5);
+	//instColumn5.SetMaterial(&tableWood);
 	scn.AddObject(instColumn5);
 	instColumn6.SetMatrix(col6);
+	//instColumn6.SetMaterial(&tableWood);
 	scn.AddObject(instColumn6);
 
 	// Create lights
@@ -300,34 +318,34 @@ void Final() {
 	sunlgt.SetBaseColor(Color(1.0f, 1.0f, 0.9f));
 	sunlgt.SetIntensity(1.0f);
 	sunlgt.SetDirection(Vector3(-0.5f, -1.0f, -0.5f)); //sunlgt.SetDirection(Vector3(2.0f, -3.0f, -2.0f));
-	//scn.AddLight(sunlgt);
+	scn.AddLight(sunlgt);
 
 	// Point Light;
 	PointLight point1, point2, point3, point4;
 	point1.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
 	point1.SetIntensity(5.0f);
 	point1.SetPosition(Vector3(-5.0f, 15.0f, 5.0f));
-	scn.AddLight(point1);
+	//scn.AddLight(point1);
 
 	point2.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
 	point2.SetIntensity(5.0f);
 	point2.SetPosition(Vector3(-5.0f, 15.0f, -5.0f));
-	scn.AddLight(point2);
+	//scn.AddLight(point2);
 
 
 	point3.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
 	point3.SetIntensity(5.0f);
 	point3.SetPosition(Vector3(5.0f, 15.0f, 5.0f));
-	scn.AddLight(point3);
+	//scn.AddLight(point3);
 
 	point4.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
 	point4.SetIntensity(50.0f);
 	point4.SetPosition(Vector3(5.0f, 15.0f, -5.0f));
-	scn.AddLight(point4);
+	//scn.AddLight(point4);
 
 	// Create camera
 	Camera cam;
-	cam.LookAt(Vector3(5.0f, 10.0f, 20.0f), Vector3(0.0f, 0.0f, 0.0f));
+	cam.LookAt(Vector3(10.0f, 10.0f, 15.0f), Vector3(0.0f, 0.0f, 0.0f));
 	cam.SetFOV(40.0f);
 	cam.SetAspect(1.33f);
 	cam.SetResolution(800, 600);
