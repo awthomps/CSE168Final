@@ -25,6 +25,7 @@ inline float Max(float a,float b)			{return a>b ? a : b;}
 inline float Max(float a, float b, float c)	{ return Max(Max(a, b), c); }
 inline int Clamp(int x,int a,int b)			{if(x<a) return a; if(x>b) return b; return x;}
 inline float Clamp(float x,float a,float b)	{if(x<a) return a; if(x>b) return b; return x;}
+inline float Linear(float a, float b, float t) { return (a * (1 - t)) + (b * t);}
 
 ////////////////////////////////////////////////////////////////////////////////
 

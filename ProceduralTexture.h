@@ -6,6 +6,7 @@
 #include "Intersection.h"
 #include "Color.h";
 #include "Matrix34.h";
+#include "Core.h";
 #include <random>;
 #include <cmath>;
 #include <iostream>;
@@ -23,10 +24,11 @@ public:
 	virtual Color GenerateColor(Vector3 v)=0;
 	void SetScale(float s){ scale = s; }
 	void SetOrientation(unsigned orient) { orientation = orient;  }
+	void SetNoiseDistance(float dist) { noiseDistance = dist; }
 
 protected:
 	float noise[SIZE_OF_NOISE][SIZE_OF_NOISE][SIZE_OF_NOISE];
-	float scale;
+	float scale, noiseDistance;
 	Vector3 origin;
 	Color *ColorMap;
 	unsigned int MapSize;
@@ -84,7 +86,36 @@ protected:
 		}
 	}
 
+	float SampleNoise(float s, float t, float r) {
+		int sPos = floor((SIZE_OF_NOISE-1) * s);
+		int tPos = floor((SIZE_OF_NOISE-1) * t);
+		int rPos = floor((SIZE_OF_NOISE-1) * r);
+
+		float diffS, diffT, diffR;
+		diffS = ((SIZE_OF_NOISE - 1) * s) - ((float)sPos);
+		diffT = ((SIZE_OF_NOISE - 1) * t) - ((float)tPos);
+		diffR = ((SIZE_OF_NOISE - 1) * r) - ((float)rPos);
+
+		//work the "noiseDistance" into this
+		
+		//Y planes:
+		float valBot = yPlaneInterpolation(sPos, tPos, rPos, diffS, diffR);
+		float valTop = yPlaneInterpolation(sPos, tPos + 1, rPos, diffS, diffR);
+		Linear(valBot, valTop, diffT);
+	}
+
 private:
+
+	float yPlaneInterpolation(int xLow, int yLevel, int zLow, float xt, float zt) {
+		float lowB, highB, lowT, highT;
+		lowB = noise[zLow%SIZE_OF_NOISE][yLevel%SIZE_OF_NOISE][xLow%SIZE_OF_NOISE];
+		highB = noise[zLow% SIZE_OF_NOISE][yLevel%SIZE_OF_NOISE][(xLow+1)%SIZE_OF_NOISE];
+		
+		lowT = noise[(zLow+1)%SIZE_OF_NOISE][yLevel%SIZE_OF_NOISE][xLow%SIZE_OF_NOISE];
+		highT = noise[(zLow+1)% SIZE_OF_NOISE][yLevel%SIZE_OF_NOISE][(xLow + 1) % SIZE_OF_NOISE];
+
+		Linear(Linear(lowB, highB, xt), Linear(lowT, highT, xt), zt);
+	}
 };
 
 

@@ -35,9 +35,9 @@ public:
 	}
 	void FromInt(int c)						{Set(float((c>>16)&0xff)/255.0f,float((c>>8)&0xff)/255.0f,float(c&0xff)/255.0f);}
 	void FromLinearInterpolation(Color a, Color b, float t) {
-		h = linear(a.h, b.h, t);
-		s = linear(a.s, b.s, t);
-		v = linear(a.v, b.v, t);
+		h = Linear(a.h, b.h, t);
+		s = Linear(a.s, b.s, t);
+		v = Linear(a.v, b.v, t);
 		hsv2rgb(); //get rgb colors
 	}
 
@@ -47,10 +47,6 @@ public:
 private:
 	float Red,Green,Blue;
 	float h, s, v;
-
-	float linear(float a, float b, float t) {
-		return (a * (1 - t)) + (b * t);
-	}
 
 	void rgb2hsv() {
 		double min, max, delta;

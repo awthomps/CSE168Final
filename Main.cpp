@@ -22,7 +22,7 @@ void Final();
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char **argv) {
-	project2();// Final();
+	Final();
 	std::this_thread::sleep_for(std::chrono::seconds(20));
 	return 0;
 }
@@ -95,8 +95,7 @@ void project2() {
 	scn.AddObject(ground);
 
 	Wood tableWood;
-	tableWood.SetScale(0.002f);
-	tableWood.SetOrientation(ORIENTATION_Z);
+	tableWood.SetScale(0.06f);
 
 	// Create dragon
 	MeshObject dragon;
@@ -251,19 +250,20 @@ void Final() {
 
 	// Create table
 	MeshObject table;
-	table.LoadPLY("dragon.ply", 0);
+	table.LoadPLY("models/bench.ply", 0);
 	table.Smooth();
 	BoxTreeObject treeTable;
 	treeTable.Construct(table);
 	// Create instance
 	InstanceObject instTable(treeTable);
 	Wood tableWood;
-	tableWood.SetScale(1.0f);
+	tableWood.SetScale(2.0f);
 	tableWood.SetOrigin(Vector3(0,4.0f,0));
-	tableWood.SetOrientation(ORIENTATION_Z);
+	tableWood.SetOrientation(ORIENTATION_Y);
 	instTable.SetMaterial(&tableWood);
 	Matrix34 mtxTable;
-	mtxTable.MakeScale(40.0f);
+	mtxTable.MakeScale(4.0f);
+	mtxTable.d.Set(0.0f, 0.0f, 10.0f);
 	instTable.SetMatrix(mtxTable);
 	scn.AddObject(instTable);
 

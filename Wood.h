@@ -17,7 +17,9 @@ public:
 
 
 	Color GenerateColor(Vector3 v) {
+		v = v / scale;
 		float val = SampleFunction(v.x, v.y, v.z);
+		noiseDistance = 10.0f;
 		float sampleVal = val - floor(val); //get a value from 0-1.0
 		if( sampleVal < 0.0 || sampleVal > 1.0) std::cout << sampleVal << std::endl;
 		return ColorFromMap(sampleVal);
@@ -49,19 +51,19 @@ public:
 		//color = DiffuseColor;
 		Vector3 inCrossN = in;
 		inCrossN.Cross(in, hit.Normal);
-		color = GenerateColor(hit.Position); //.AddScaled(DiffuseColor, cos(asin(inCrossN.Magnitude() / (in.Magnitude() * hit.Normal.Magnitude()))));
+		color = GenerateColor(hit.Position);
 	}
 
 private:
 	float SampleFunction(float s, float t, float r) {
 		if (orientation == ORIENTATION_X) {
-			return ((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z)) / scale;
+			return ((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z));
 		}
 		else if (orientation == ORIENTATION_Y) {
-			return ((s - origin.x)*(s - origin.x)) + ((r - origin.z)*(r - origin.z)) / scale;
+			return ((s - origin.x)*(s - origin.x)) + ((r - origin.z)*(r - origin.z));
 		}
 		else {
-			return ((s - origin.x)*(s - origin.x)) + ((t - origin.y)*(t - origin.y)) / scale;
+			return ((s - origin.x)*(s - origin.x)) + ((t - origin.y)*(t - origin.y));
 		}
 	}
 
