@@ -12,23 +12,23 @@ public:
 		Color colors[2];
 		colors[0] = Color(Vector3(.2, .2, .2));
 		colors[1] = Color(Vector3(1, 1, 1));
-
-		/*
-		unsigned int size = 7;
-		Color colors[7];
-		colors[0] = Color(Vector3(0, 0, 0));
-		colors[1] = Color(Vector3(0.5, 0.5, 0.5));
-		colors[2] = Color(Vector3(0.75, 0.75, 0.75));
-		colors[3] = Color(Vector3(1, 1, 1));
-		colors[4] = Color(Vector3(0.75, 0.75, 0.75));
-		colors[5] = Color(Vector3(0.5, 0.5, 0.5));
-		colors[6] = Color(Vector3(0, 0, 0));
-		*/
 		SetColorMap(size, colors);
 	}
 
 	Color ColorFromMap(float val) {
-		if (val < 0.5) {
+		if (val < .1666) {
+			return ColorMap[0];
+		}
+		else if (val < .3333) {
+			return ColorMap[1];
+		}
+		else if (val < .5) {
+			return ColorMap[0];
+		}
+		else if (val < .6666) {
+			return ColorMap[1];
+		}
+		else if (val < 0.8333) {
 			return ColorMap[0];
 		}
 		else return ColorMap[1];

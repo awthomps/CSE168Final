@@ -16,7 +16,7 @@ public:
 private:
 	float SampleFunction(float s, float t, float r) {
 		if (orientation == ORIENTATION_X) {
-			return (((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z))) +SampleNoise(s, t, r);
+			return (((t - origin.y)*(t - origin.y)) + ((r - origin.z)*(r - origin.z)))+SampleNoise(s, t, r);
 		}
 		else if (orientation == ORIENTATION_Y) {
 			return (((s - origin.x)*(s - origin.x)) + ((r - origin.z)*(r - origin.z))) +SampleNoise(s, t, r);

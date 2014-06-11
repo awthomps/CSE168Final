@@ -11,7 +11,9 @@
 #include "BoxTreeObject.h"
 #include "AshikhminMaterial.h"
 #include "LambertMaterial.h"
-#include "Wood.h";
+#include "Wood.h"
+#include "Marble.h"
+#include "Carpet.h"
 #include <thread>
 
 void project1();
@@ -246,11 +248,48 @@ void Final() {
 	tableWood.SetOrientation(ORIENTATION_Z);
 	tableWood.SetNoiseBehavior(0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0);
 
+	Wood benchWood;
+	benchWood.SetScale(2.0f);
+	benchWood.SetOrigin(Vector3(-10.0f, 2.0f, 0));
+	benchWood.SetOrientation(ORIENTATION_Y);
+	benchWood.SetNoiseBehavior(0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0);
+
+	Marble marble1;
+	marble1.SetScale(10.0f);
+	marble1.SetOrientation(ORIENTATION_Z);
+	marble1.SetNoiseBehavior(0.0, 0.0, 0.0, 0.75, 1.0, 1.0, 1.0);
+
+	Marble marble2;
+	marble2.SetScale(10.0f);
+	marble2.SetOrigin(Vector3(0.0f, 0.0f, -15.0f));
+	marble2.SetOrientation(ORIENTATION_Z);
+	marble2.SetNoiseBehavior(0.0, 0.0, 0.0, 0.75, 1.0, 1.0, 1.0);
+
+	Marble redMarble;
+	redMarble.SetScale(0.2f);
+	redMarble.SetOrientation(ORIENTATION_X);
+	redMarble.SetNoiseBehavior(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
+	unsigned int redSize = 2;
+	Color redColors[2];
+	redColors[0] = Color(1.0f, 0.01f, 0.02f);
+	redColors[1] = Color(1.0f, 1.0f, 1.0f);
+	redMarble.SetColorMap(redSize, redColors);
+
+	Carpet carpet;
+	carpet.SetScale(1.0f);
+	carpet.SetOrigin(Vector3(0.0f, 0.0f, -15.0f));
+	carpet.SetNoiseBehavior(0.0, 0.0, 0.0, 0.75, 1.0, 1.0, 1.0);
+
+	
+
+
+
 	// Create ground
-	MeshObject ground, backWall, leftWall;
-	ground.MakeBox(30.0f, 0.1f, 30.0f);
-	backWall.MakeBox(30.0f, 30.0f, 0.1f);
-	leftWall.MakeBox(0.1f, 30.0f, 30.f);
+	MeshObject ground, backWall, leftWall, rightWall;
+	ground.MakeBox(30.0f, 0.1f, 30.0f, &carpet);
+	backWall.MakeBox(30.0f, 30.0f, 0.1f , &marble2);
+	leftWall.MakeBox(0.1f, 30.0f, 30.f, &marble1);
+	rightWall.MakeBox(0.1f, 30.0f, 30.0f, &marble1);
 	InstanceObject groundInst(ground), backWallInst(backWall);
 	scn.AddObject(groundInst);
 	Matrix34 mtxBackWall;
@@ -262,6 +301,11 @@ void Final() {
 	mtxLeftWall.d.Set(-15.0f, 0.0f, 0.0f);
 	leftWallInst.SetMatrix(mtxLeftWall);
 	scn.AddObject(leftWallInst);
+	InstanceObject rightWallInst(rightWall);
+	Matrix34 mtxRightWall;
+	mtxRightWall.d.Set(15.0f, 0.0f, 0.0f);
+	rightWallInst.SetMatrix(mtxRightWall);
+	scn.AddObject(rightWallInst);
 
 
 	// Create table
@@ -275,9 +319,22 @@ void Final() {
 	instTable.SetMaterial(&tableWood);
 	Matrix34 mtxTable;
 	//mtxTable.MakeScale(8.0f);
-	mtxTable.d.Set(0.0f, 0.0f, 0.0f);
+	mtxTable.d.Set(0.0f, 0.0f, -10.0f);
 	instTable.SetMatrix(mtxTable);
 	scn.AddObject(instTable);
+
+	// Create bench:
+	MeshObject bench;
+	bench.MakeBox(1.0f, 2.0f, 8.0f);
+	BoxTreeObject treeBench;
+	treeBench.Construct(bench);
+	//create instance
+	InstanceObject instBench(treeBench);
+	instBench.SetMaterial(&benchWood);
+	Matrix34 mtxBench;
+	mtxBench.d.Set(5.0f, 1.0f, 0.0f);
+	instBench.SetMatrix(mtxBench);
+	scn.AddObject(instBench);
 
 	// Pillars:
 	MeshObject column;
@@ -295,63 +352,92 @@ void Final() {
 	col6.d.Set(-10.0f, 0.0f, -10.0f);
 	
 	instColumn1.SetMatrix(col1);
-	//instColumn1.SetMaterial(&tableWood);
+	instColumn1.SetMaterial(&marble1);
 	scn.AddObject(instColumn1);
 	instColumn2.SetMatrix(col2);
-	//instColumn2.SetMaterial(&tableWood);
+	instColumn2.SetMaterial(&marble2);
 	scn.AddObject(instColumn2);
 	instColumn3.SetMatrix(col3);
-	//instColumn3.SetMaterial(&tableWood);
+	instColumn3.SetMaterial(&marble2);
 	scn.AddObject(instColumn3);
 	instColumn4.SetMatrix(col4);
-	//instColumn4.SetMaterial(&tableWood);
+	instColumn4.SetMaterial(&marble2);
 	scn.AddObject(instColumn4);
 	instColumn5.SetMatrix(col5);
-	//instColumn5.SetMaterial(&tableWood);
+	instColumn5.SetMaterial(&marble1);
 	scn.AddObject(instColumn5);
 	instColumn6.SetMatrix(col6);
-	//instColumn6.SetMaterial(&tableWood);
+	instColumn6.SetMaterial(&marble2);
 	scn.AddObject(instColumn6);
+
+	/*
+	//create Dragon:
+	MeshObject dragon;
+	dragon.MakeBox(2.0f, 2.0f, 2.0f);
+	//dragon.LoadPLY("dragon.ply",0);
+	//dragon.Smooth();
+	BoxTreeObject treeDragon;
+	treeDragon.Construct(dragon);
+	InstanceObject instDragon(treeDragon);
+	Matrix34 mtxDragon;
+	//mtxDragon.MakeScale(10.0f);
+	mtxDragon.d.Set(0.0f, 1.0f, 0.0f);
+	instDragon.SetMatrix(mtxDragon);
+	instDragon.SetMaterial(&redMarble);
+	scn.AddObject(instDragon);
+	*/
 
 	// Create lights
 	DirectLight sunlgt;
 	sunlgt.SetBaseColor(Color(1.0f, 1.0f, 0.9f));
 	sunlgt.SetIntensity(1.0f);
 	sunlgt.SetDirection(Vector3(-0.5f, -1.0f, -0.5f)); //sunlgt.SetDirection(Vector3(2.0f, -3.0f, -2.0f));
-	scn.AddLight(sunlgt);
+	//scn.AddLight(sunlgt);
 
 	// Point Light;
 	PointLight point1, point2, point3, point4;
 	point1.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point1.SetIntensity(5.0f);
+	point1.SetIntensity(50.0f);
 	point1.SetPosition(Vector3(-5.0f, 15.0f, 5.0f));
-	//scn.AddLight(point1);
+	scn.AddLight(point1);
 
 	point2.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point2.SetIntensity(5.0f);
+	point2.SetIntensity(50.0f);
 	point2.SetPosition(Vector3(-5.0f, 15.0f, -5.0f));
-	//scn.AddLight(point2);
+	scn.AddLight(point2);
 
 
 	point3.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
-	point3.SetIntensity(5.0f);
+	point3.SetIntensity(50.0f);
 	point3.SetPosition(Vector3(5.0f, 15.0f, 5.0f));
-	//scn.AddLight(point3);
+	scn.AddLight(point3);
 
 	point4.SetBaseColor(Color(1.0f, 1.0f, 1.0f));
 	point4.SetIntensity(50.0f);
 	point4.SetPosition(Vector3(5.0f, 15.0f, -5.0f));
-	//scn.AddLight(point4);
+	scn.AddLight(point4);
 
 	// Create camera
 	Camera cam;
-	cam.LookAt(Vector3(10.0f, 10.0f, 15.0f), Vector3(0.0f, 0.0f, 0.0f));
+	cam.LookAt(Vector3(5.0f, 10.0f, 20.0f), Vector3(3.0f, 5.0f, 0.0f));
 	cam.SetFOV(40.0f);
-	cam.SetAspect(1.33f);
-	cam.SetResolution(800, 600);
+	cam.SetAspect(16.0f / 9.0f);
+	cam.SetResolution(1600, 900);
 	cam.SetSuperSample(1);
 
 	// Render image
 	cam.Render(scn);
 	cam.SaveBitmap("final1.bmp");
+
+	cam.LookAt(Vector3(-4.0f, 5.0f, 1.0f), Vector3(5.0f, 2.0f, 0.0f));
+	cam.Render(scn);
+	cam.SaveBitmap("final2.bmp");
+
+	cam.LookAt(Vector3(5.0f, 4.0f, 8.0f), Vector3(5.0f, 3.0f, -5.0f));
+	cam.Render(scn);
+	cam.SaveBitmap("final3.bmp");
+
+	cam.LookAt(Vector3(2.0f, 8.0f, -1.0f), Vector3(1.0f, 6.0f, -4.0f));
+	cam.Render(scn);
+	cam.SaveBitmap("final4.bmp");
 }

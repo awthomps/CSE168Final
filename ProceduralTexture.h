@@ -10,8 +10,9 @@
 #include <random>;
 #include <cmath>;
 #include <iostream>;
+#include <vector>;
 
-#define SIZE_OF_NOISE 10
+#define SIZE_OF_NOISE 20
 #define ORIENTATION_X 0
 #define ORIENTATION_Y 1
 #define ORIENTATION_Z 2
@@ -30,10 +31,7 @@ public:
 		}
 	}
 
-	virtual void ComputeReflectance(Color &col, const Vector3 &in, const Vector3 &out, const Intersection &hit) = 0;
-	virtual void GenerateSample(Color &color, Vector3 &sample, const Vector3 &in, const Intersection &hit) = 0;
 	void SetOrigin(Vector3 orig) { origin = orig; }
-	virtual Color GenerateColor(Vector3 v)=0;
 	void SetScale(float s){ scale = s; }
 	void SetOrientation(unsigned orient) { orientation = orient;  }
 	void SetNoiseDistance(float dist) { noiseDistance = dist; }
@@ -41,7 +39,48 @@ public:
 		phase[0] = ps; phase[1] = pt; phase[2] = pr; amp = amplitudeN; freq[0] = fsN; freq[1] = ftN; freq[2] = frN;
 	}
 
+	void ComputeReflectance(Color &col, const Vector3 &in, const Vector3 &out, const Intersection &hit) {
+		col.Multiply(Color(GenerateColor(hit.Position).getInVector3() * 1.0f / PI));
+	}
+
+	void GenerateSample(Color &color, Vector3 &sample, const Vector3 &in, const Intersection &hit) {
+		float s, t, u, v;
+		Vector3 preTrans;
+		s = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		u = 2.0f * PI * s;
+		t = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+		v = sqrt(1.0 - t);
+
+		preTrans.x = v * cos(u);
+		preTrans.y = sqrt(t);
+		preTrans.z = v * sin(u);
+
+		//orient the h vector into the surface coordinate space:
+		Matrix34 coordinateSpace;
+		coordinateSpace.a = hit.TangentU;
+		coordinateSpace.b = hit.Normal;
+		coordinateSpace.c = hit.TangentV;
+		coordinateSpace.d = Vector3(0.0f, 0.0f, 0.0f);
+		coordinateSpace.Transform3x3(preTrans, sample);
+		//color = DiffuseColor;
+		Vector3 inCrossN = in;
+		inCrossN.Cross(in, hit.Normal);
+		color = GenerateColor(hit.Position);
+	}
+
+	void SetColorMap(unsigned int size, Color *colors) {
+		MapSize = size;
+		if (ColorMap) delete[]ColorMap;
+		ColorMap = new Color[MapSize];
+		for (unsigned int i = 0; i < MapSize; ++i) {
+			ColorMap[i] = colors[i];
+		}
+	}
+
 protected:
+
+	
+
 	float noise[SIZE_OF_NOISE][SIZE_OF_NOISE][SIZE_OF_NOISE];
 	float scale, noiseDistance;
 	float phase[3], amp, freq[3]; //frequencies;
@@ -50,22 +89,13 @@ protected:
 	unsigned int MapSize;
 	unsigned int orientation;
 
-	void SetColorMap(unsigned int size, Color *colors) {
-		MapSize = size;
-		if (ColorMap) delete []ColorMap;
-		ColorMap = new Color[MapSize];
-		for (unsigned int i = 0; i < MapSize; ++i) {
-			ColorMap[i] = colors[i];
-		}
-	}
-
 	Color ColorFromMap(float val) {
 		//lerp color
 		if (MapSize <= 0) return Color(0.0f, 0.0f, 0.0f);
 		else if (MapSize == 1) return *ColorMap;
 
-		float SampleLocation = val / ((float)MapSize);
-		//std::cout << val << std::endl;
+		float SampleLocation = val * ((float)MapSize - 1.0);
+		//if(SampleLocation > 0.5) std::cout << SampleLocation << std::endl;
 		unsigned int top = ceil(SampleLocation);
 		unsigned int bot = floor(SampleLocation);
 		float diff = SampleLocation - bot;
@@ -139,6 +169,14 @@ protected:
 		float valBot = yPlaneInterpolation(sPos, tPos, rPos, diffS, diffR);
 		float valTop = yPlaneInterpolation(sPos, tPos + 1, rPos, diffS, diffR);
 		return amp * Linear(valBot, valTop, diffT);
+	}
+
+	Color GenerateColor(Vector3 v) {
+		v = v / scale;
+		float val = SampleFunction(v.x, v.y, v.z);
+		float sampleVal = val - floor(val); //get a value from 0-1.0
+		if (sampleVal < 0.0 || sampleVal > 1.0) std::cout << sampleVal << std::endl;
+		return ColorFromMap(sampleVal);
 	}
 
 private:
