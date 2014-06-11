@@ -242,8 +242,8 @@ void Final() {
 	//Materials
 	Wood tableWood;
 	tableWood.SetScale(2.0f);
-	tableWood.SetOrigin(Vector3(2.0f, 0.0f, 0));
-	tableWood.SetOrientation(ORIENTATION_Y);
+	tableWood.SetOrigin(Vector3(10.0f, 0.0f, 0));
+	tableWood.SetOrientation(ORIENTATION_Z);
 	tableWood.SetNoiseBehavior(0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0);
 
 	// Create ground
